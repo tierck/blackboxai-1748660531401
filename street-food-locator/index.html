@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Street Food Locator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"
+    integrity=""
+    crossorigin=""
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
+</head>
+<body class="bg-white text-black">
+  <div id="map"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script>
+    // Sample street food businesses data
+    const businesses = [
+      { id: 1, name: "Tacos El Callejón", lat: 19.4326, lng: -99.1332 },
+      { id: 2, name: "Arepas La Plaza", lat: 19.4330, lng: -99.1350 },
+      { id: 3, name: "Churros y Café", lat: 19.4310, lng: -99.1320 },
+      { id: 4, name: "Elotes y Esquites", lat: 19.4340, lng: -99.1340 }
+    ];
+
+    // Initialize map
+    const map = L.map('map').setView([19.4326, -99.1332], 15);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add markers for businesses
+    businesses.forEach(business => {
+      const marker = L.marker([business.lat, business.lng]).addTo(map);
+      marker.bindPopup('<b>' + business.name + '</b>');
+    });
+
+    // Get user location and center map
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          const userLatLng = [position.coords.latitude, position.coords.longitude];
+          map.setView(userLatLng, 16);
+          L.circle(userLatLng, { radius: 50, color: 'black', fillColor: '#000', fillOpacity: 0.3 }).addTo(map).bindPopup("Tu ubicación");
+        },
+        function() {
+          console.warn("No se pudo obtener la ubicación del usuario.");
+        }
+      );
+    } else {
+      console.warn("Geolocalización no soportada por el navegador.");
+    }
+  </script>
+</body>
+</html>
