@@ -2,69 +2,1257 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Street Food Locator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"
-    integrity=""
-    crossorigin=""
-  />
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SUMA Empresarial, S.C. — Consultoría en IFNB's</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0B1F3A;
+      --navy2:   #122848;
+      --gold:    #C9A84C;
+      --gold2:   #E2C06A;
+      --light:   #F5F7FA;
+      --white:   #FFFFFF;
+      --gray:    #6B7280;
+      --gray2:   #9CA3AF;
+      --border:  #E5E7EB;
+      --text:    #1F2937;
+    }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: 'Roboto', sans-serif;
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      overflow-x: hidden;
     }
-    #map {
-      height: 100vh;
+
+    /* ─── TICKER ─────────────────────────────────────────── */
+    .ticker-bar {
+      background: var(--navy);
+      color: #CBD5E1;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      padding: 6px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .ticker-inner {
+      display: inline-flex;
+      gap: 3rem;
+      animation: ticker 28s linear infinite;
+    }
+    .ticker-inner span { color: var(--gold); font-weight: 600; }
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ─── NAVBAR ─────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 12px rgba(0,0,0,0.06);
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 42px; height: 42px;
+      background: var(--navy);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-icon svg { width: 24px; height: 24px; fill: var(--gold); }
+    .logo-text { line-height: 1.1; }
+    .logo-text strong { display: block; font-size: 1.05rem; font-weight: 800; color: var(--navy); letter-spacing: -0.02em; }
+    .logo-text small { font-size: 0.65rem; color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-links a:hover { background: var(--light); color: var(--navy); }
+    .nav-cta {
+      background: var(--gold) !important;
+      color: var(--navy) !important;
+      font-weight: 700 !important;
+      padding: 0.5rem 1.2rem !important;
+    }
+    .nav-cta:hover { background: var(--gold2) !important; }
+
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--navy); border-radius: 2px; transition: 0.3s; }
+
+    /* ─── HERO ───────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 60%, #1a3a5c 100%);
+      color: var(--white);
+      padding: 100px 2rem 90px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      position: relative;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(201,168,76,0.15);
+      border: 1px solid rgba(201,168,76,0.4);
+      color: var(--gold2);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 em { color: var(--gold); font-style: normal; }
+    .hero p {
+      font-size: 1.05rem;
+      color: #94A3B8;
+      line-height: 1.75;
+      margin-bottom: 2rem;
+      max-width: 480px;
+    }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--gold);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: var(--gold2); transform: translateY(-1px); }
+    .btn-outline {
+      border: 1.5px solid rgba(255,255,255,0.3);
+      color: var(--white);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+      display: inline-block;
+    }
+    .btn-outline:hover { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+
+    /* Hero card */
+    .hero-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+    }
+    .hero-card h3 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+    }
+    .indicator-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .indicator-row:last-child { border-bottom: none; }
+    .ind-label { font-size: 0.82rem; color: #94A3B8; }
+    .ind-value { font-size: 1.1rem; font-weight: 700; color: var(--white); }
+    .ind-change { font-size: 0.72rem; color: #4ADE80; font-weight: 600; }
+    .ind-change.down { color: #F87171; }
+
+    /* ─── STATS ──────────────────────────────────────────── */
+    .stats-bar {
+      background: var(--gold);
+      padding: 2rem;
+    }
+    .stats-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      text-align: center;
+    }
+    .stat-item { padding: 0.5rem; }
+    .stat-num { font-size: 2.2rem; font-weight: 800; color: var(--navy); line-height: 1; }
+    .stat-label { font-size: 0.78rem; font-weight: 600; color: var(--navy); opacity: 0.7; margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* ─── SECTION COMMONS ────────────────────────────────── */
+    section { padding: 90px 2rem; }
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+    .section-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .section-sub {
+      font-size: 1rem;
+      color: var(--gray);
+      line-height: 1.7;
+      max-width: 560px;
+    }
+    .section-header { margin-bottom: 3.5rem; }
+
+    /* ─── ABOUT ──────────────────────────────────────────── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .about-visual {
+      position: relative;
+    }
+    .about-img-box {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a3a5c 100%);
+      border-radius: 20px;
+      height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .about-img-box::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; right: -2px;
+      width: 120px; height: 120px;
+      background: var(--gold);
+      border-radius: 20px 0 20px 0;
+      opacity: 0.15;
+    }
+    .about-svg { width: 180px; opacity: 0.25; }
+    .about-badge {
+      position: absolute;
+      bottom: -20px; right: -20px;
+      background: var(--gold);
+      color: var(--navy);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      font-weight: 800;
+      font-size: 1.5rem;
+      line-height: 1;
+      box-shadow: 0 8px 30px rgba(201,168,76,0.4);
+    }
+    .about-badge small { display: block; font-size: 0.7rem; font-weight: 600; opacity: 0.7; margin-top: 0.2rem; }
+    .about-list { list-style: none; margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.85rem; }
+    .about-list li {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      font-size: 0.92rem; color: var(--gray); line-height: 1.5;
+    }
+    .about-list li::before {
+      content: '';
+      flex-shrink: 0;
+      width: 20px; height: 20px;
+      background: var(--gold);
+      border-radius: 50%;
+      margin-top: 1px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%230B1F3A'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E");
+      background-size: 12px;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    /* ─── SERVICES ───────────────────────────────────────── */
+    .services-bg { background: var(--light); }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .service-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid var(--border);
+      transition: box-shadow 0.3s, transform 0.3s, border-color 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+    }
+    .service-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.1); transform: translateY(-4px); border-color: transparent; }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--navy), #1a3a5c);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+    .service-icon svg { width: 26px; height: 26px; fill: var(--gold); }
+    .service-card h3 { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 0.6rem; }
+    .service-card p { font-size: 0.87rem; color: var(--gray); line-height: 1.65; }
+
+    /* ─── CLIENTS ────────────────────────────────────────── */
+    .clients-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+    .client-pill {
+      background: var(--light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1rem;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.03em;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .client-pill:hover { background: var(--navy); color: var(--gold); border-color: var(--navy); }
+    .client-pill small { display: block; font-size: 0.68rem; font-weight: 400; color: var(--gray); margin-top: 0.2rem; }
+    .client-pill:hover small { color: rgba(201,168,76,0.7); }
+
+    /* ─── COURSES ────────────────────────────────────────── */
+    .courses-bg { background: var(--navy); }
+    .courses-bg .section-title { color: var(--white); }
+    .courses-bg .section-sub { color: #94A3B8; }
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .course-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 1.75rem;
+      transition: background 0.3s, border-color 0.3s;
+      cursor: pointer;
+    }
+    .course-card:hover { background: rgba(201,168,76,0.1); border-color: rgba(201,168,76,0.4); }
+    .course-num { font-size: 0.7rem; font-weight: 700; color: var(--gold); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+    .course-card h3 { font-size: 0.95rem; font-weight: 700; color: var(--white); margin-bottom: 0.5rem; line-height: 1.3; }
+    .course-card p { font-size: 0.82rem; color: #64748B; line-height: 1.6; }
+    .course-tag {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.3);
+      padding: 0.2rem 0.6rem;
+      border-radius: 100px;
+    }
+
+    /* ─── GALLERY ────────────────────────────────────────── */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: 200px 200px;
+      gap: 1rem;
+    }
+    .gallery-item {
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+      background: var(--light);
+      border: 1px solid var(--border);
+    }
+    .gallery-item:first-child { grid-column: span 2; grid-row: span 2; }
+    .gallery-inner {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--navy) 0%, #1a3a5c 100%);
+      transition: transform 0.4s;
+    }
+    .gallery-item:hover .gallery-inner { transform: scale(1.04); }
+    .gallery-inner svg { width: 48px; height: 48px; fill: rgba(201,168,76,0.3); }
+    .gallery-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(11,31,58,0.9));
+      color: var(--white);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 1.5rem 1rem 0.75rem;
+    }
+
+    /* ─── CONTACT ────────────────────────────────────────── */
+    .contact-bg { background: var(--light); }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .contact-info h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--navy); margin-bottom: 1rem; }
+    .contact-info p { font-size: 0.92rem; color: var(--gray); line-height: 1.7; margin-bottom: 2rem; }
+    .contact-detail {
+      display: flex; align-items: flex-start; gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .contact-detail-icon {
+      width: 40px; height: 40px; flex-shrink: 0;
+      background: var(--navy);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .contact-detail-icon svg { width: 18px; height: 18px; fill: var(--gold); }
+    .contact-detail-text strong { display: block; font-size: 0.82rem; font-weight: 700; color: var(--navy); }
+    .contact-detail-text span { font-size: 0.85rem; color: var(--gray); }
+
+    .contact-form {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 2.5rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.06);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
       width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      color: var(--text);
+      background: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
     }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+    }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+    .form-submit {
+      width: 100%;
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .form-submit:hover { background: var(--gold); color: var(--navy); transform: translateY(-1px); }
+
+    /* ─── INFOGRAPHICS ───────────────────────────────────── */
+    .infographics-bg { background: var(--white); }
+    .infographics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .info-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .info-card:hover { box-shadow: 0 10px 35px rgba(0,0,0,0.09); transform: translateY(-3px); }
+    .info-card-top {
+      height: 160px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .info-card-top svg { width: 64px; height: 64px; }
+    .info-card-body { padding: 1.25rem 1.5rem 1.5rem; }
+    .info-card-body h3 { font-size: 0.95rem; font-weight: 700; color: var(--navy); margin-bottom: 0.4rem; }
+    .info-card-body p { font-size: 0.82rem; color: var(--gray); line-height: 1.6; }
+    .info-card-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      margin-top: 0.85rem;
+      font-size: 0.8rem; font-weight: 700;
+      color: var(--gold);
+      text-decoration: none;
+    }
+    .info-card-link:hover { color: var(--navy); }
+
+    /* ─── FOOTER ─────────────────────────────────────────── */
+    footer {
+      background: var(--navy);
+      color: #94A3B8;
+      padding: 60px 2rem 30px;
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+    .footer-brand p { font-size: 0.85rem; line-height: 1.7; margin-top: 1rem; max-width: 280px; }
+    .footer-col h4 { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .footer-col ul a { text-decoration: none; font-size: 0.85rem; color: #94A3B8; transition: color 0.2s; }
+    .footer-col ul a:hover { color: var(--gold); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+    }
+    .footer-logo-text strong { color: var(--white); font-size: 1rem; }
+    .footer-logo-text small { color: var(--gold); font-size: 0.65rem; letter-spacing: 0.08em; }
+
+    /* ─── MOBILE ─────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .hero-card { display: none; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .about-visual { display: none; }
+      .services-grid { grid-template-columns: 1fr 1fr; }
+      .courses-grid { grid-template-columns: 1fr 1fr; }
+      .clients-grid { grid-template-columns: repeat(3, 1fr); }
+      .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .gallery-item:first-child { grid-column: span 2; grid-row: span 1; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .infographics-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+    }
+    @media (max-width: 600px) {
+      .services-grid { grid-template-columns: 1fr; }
+      .courses-grid { grid-template-columns: 1fr; }
+      .clients-grid { grid-template-columns: 1fr 1fr; }
+      .infographics-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-item:first-child { grid-column: span 1; }
+    }
+
+    /* ─── SCROLL REVEAL ──────────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
   </style>
 </head>
-<body class="bg-white text-black">
-  <div id="map"></div>
+<body>
 
-  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+  <!-- TICKER -->
+  <div class="ticker-bar">
+    <div class="ticker-inner" id="ticker">
+      <span>USD/MXN</span> 17.42 &nbsp;|&nbsp;
+      <span>UDIs</span> 8.1234 &nbsp;|&nbsp;
+      <span>Salario Mínimo</span> $185.40 MXN &nbsp;|&nbsp;
+      <span>TIIE 28d</span> 10.25% &nbsp;|&nbsp;
+      <span>INPC</span> 4.87% &nbsp;|&nbsp;
+      <span>CNBV</span> Regulación vigente 2026 &nbsp;|&nbsp;
+      <span>CONDUSEF</span> Protección al usuario financiero &nbsp;|&nbsp;
+      <span>USD/MXN</span> 17.42 &nbsp;|&nbsp;
+      <span>UDIs</span> 8.1234 &nbsp;|&nbsp;
+      <span>Salario Mínimo</span> $185.40 MXN &nbsp;|&nbsp;
+      <span>TIIE 28d</span> 10.25% &nbsp;|&nbsp;
+      <span>INPC</span> 4.87% &nbsp;|&nbsp;
+      <span>CNBV</span> Regulación vigente 2026 &nbsp;|&nbsp;
+      <span>CONDUSEF</span> Protección al usuario financiero
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#inicio" class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <strong>SUMA Empresarial</strong>
+          <small>Consultoría en IFNB's</small>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#nosotros">¿Quiénes Somos?</a></li>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#cursos">Cursos</a></li>
+        <li><a href="#galeria">Galería</a></li>
+        <li><a href="#infografias">Infografías</a></li>
+        <li><a href="#contacto" class="nav-cta">Contáctanos</a></li>
+      </ul>
+      <div class="hamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="5"/></svg>
+          Especialistas en IFNB's desde 2016
+        </div>
+        <h1>Consultoría, Asistencia Técnica y <em>Capacitación Especializada</em></h1>
+        <p>Apoyamos a Intermediarios Financieros No Bancarios a operar de forma rentable, cumplir con la regulación vigente y contar con personal altamente calificado.</p>
+        <div class="hero-btns">
+          <a href="#servicios" class="btn-primary">Conocer Servicios</a>
+          <a href="#contacto" class="btn-outline">Solicitar Consulta</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <h3>Indicadores Financieros — Centro</h3>
+        <div class="indicator-row">
+          <div>
+            <div class="ind-label">Tipo de Cambio USD/MXN</div>
+          </div>
+          <div style="text-align:right">
+            <div class="ind-value">$17.42</div>
+            <div class="ind-change">▲ +0.12%</div>
+          </div>
+        </div>
+        <div class="indicator-row">
+          <div>
+            <div class="ind-label">UDIs (Unidades de Inversión)</div>
+          </div>
+          <div style="text-align:right">
+            <div class="ind-value">8.1234</div>
+            <div class="ind-change">▲ +0.03%</div>
+          </div>
+        </div>
+        <div class="indicator-row">
+          <div>
+            <div class="ind-label">Salario Mínimo</div>
+          </div>
+          <div style="text-align:right">
+            <div class="ind-value">$185.40</div>
+            <div class="ind-change" style="color:#94A3B8">MXN/día</div>
+          </div>
+        </div>
+        <div class="indicator-row">
+          <div>
+            <div class="ind-label">TIIE 28 días</div>
+          </div>
+          <div style="text-align:right">
+            <div class="ind-value">10.25%</div>
+            <div class="ind-change down">▼ -0.25%</div>
+          </div>
+        </div>
+        <div class="indicator-row">
+          <div>
+            <div class="ind-label">INPC (Inflación)</div>
+          </div>
+          <div style="text-align:right">
+            <div class="ind-value">4.87%</div>
+            <div class="ind-change down">▼ -0.08%</div>
+          </div>
+        </div>
+        <div style="margin-top:1rem; font-size:0.68rem; color:#475569; text-align:right;">
+          Actualizado: 22 mayo 2026, 14:01 hrs. Centro
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat-item">
+        <div class="stat-num">+10</div>
+        <div class="stat-label">Años de Experiencia</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">+200</div>
+        <div class="stat-label">Clientes Atendidos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">+50</div>
+        <div class="stat-label">Cursos Impartidos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Tipos de IFNB's</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="nosotros">
+    <div class="section-inner">
+      <div class="about-grid">
+        <div class="about-visual">
+          <div class="about-img-box">
+            <svg class="about-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="20" y="80" width="30" height="100" fill="white" opacity="0.6"/>
+              <rect x="60" y="50" width="30" height="130" fill="white" opacity="0.8"/>
+              <rect x="100" y="30" width="30" height="150" fill="white"/>
+              <rect x="140" y="60" width="30" height="120" fill="white" opacity="0.7"/>
+              <line x1="10" y1="180" x2="190" y2="180" stroke="white" stroke-width="3" opacity="0.4"/>
+            </svg>
+            <div class="about-badge">
+              2016
+              <small>Fundada</small>
+            </div>
+          </div>
+        </div>
+        <div>
+          <span class="section-tag">¿Quiénes Somos?</span>
+          <h2 class="section-title">Expertos en el Sector Financiero No Bancario de México</h2>
+          <p style="color:var(--gray); line-height:1.75; font-size:0.95rem; margin-bottom:1rem;">
+            SUMA Empresarial, S.C. es una firma de consultoría especializada en Intermediarios Financieros No Bancarios (IFNBs). Desde 2016, hemos acompañado a instituciones financieras en su camino hacia la rentabilidad, el cumplimiento normativo y la excelencia operativa.
+          </p>
+          <p style="color:var(--gray); line-height:1.75; font-size:0.95rem;">
+            Nuestro equipo de expertos cuenta con amplia experiencia en regulación financiera, gobierno corporativo, gestión de riesgos y capacitación especializada para el sector.
+          </p>
+          <ul class="about-list">
+            <li>Consultoría regulatoria ante CNBV y CONDUSEF</li>
+            <li>Asistencia técnica personalizada para cada tipo de IFNB</li>
+            <li>Capacitación con instructores certificados y especializados</li>
+            <li>Acompañamiento integral en procesos de cumplimiento normativo</li>
+            <li>Diagnóstico y mejora de procesos de control interno</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services-bg" id="servicios">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-tag">Nuestros Servicios</span>
+        <h2 class="section-title">Soluciones Integrales para IFNB's</h2>
+        <p class="section-sub">Ofrecemos servicios especializados diseñados para las necesidades específicas de cada tipo de intermediario financiero no bancario.</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card reveal">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h3>Cumplimiento Normativo</h3>
+          <p>Asesoría integral para el cumplimiento de la regulación vigente ante CNBV, CONDUSEF y demás autoridades financieras mexicanas.</p>
+        </div>
+        <div class="service-card reveal">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          </div>
+          <h3>Gobierno Corporativo</h3>
+          <p>Implementación de estructuras de gobierno corporativo sólidas y eficientes para SOFOMs, SOFIPOs y Uniones de Crédito.</p>
+        </div>
+        <div class="service-card reveal">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <h3>Gestión de Riesgos</h3>
+          <p>Diseño e implementación de marcos de gestión de riesgos crediticios, operativos y de mercado adaptados a su institución.</p>
+        </div>
+        <div class="service-card reveal">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3>Análisis de Crédito</h3>
+          <p>Metodologías avanzadas para el análisis y calificación de cartera crediticia, optimizando la toma de decisiones.</p>
+        </div>
+        <div class="service-card reveal">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+          <h3>Auditoría Interna</h3>
+          <p>Revisión y fortalecimiento de los procesos de control interno y auditoría para garantizar la integridad operativa.</p>
+        </div>
+        <div class="service-card reveal">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <h3>Prevención de Lavado de Dinero</h3>
+          <p>Implementación de programas PLD/FT robustos conforme a la normativa de la SHCP y las mejores prácticas internacionales.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLIENTS -->
+  <section id="clientes">
+    <div class="section-inner">
+      <div class="section-header reveal" style="text-align:center;">
+        <span class="section-tag">Clientes que Atendemos</span>
+        <h2 class="section-title">Tipos de Intermediarios Financieros</h2>
+        <p class="section-sub" style="margin:0 auto;">Especializados en todos los tipos de Intermediarios Financieros No Bancarios regulados en México.</p>
+      </div>
+      <div class="clients-grid reveal">
+        <div class="client-pill">SOFOMs<small>Soc. Financieras de Obj. Múltiple</small></div>
+        <div class="client-pill">SOFIPOs<small>Soc. Financieras Populares</small></div>
+        <div class="client-pill">Uniones de Crédito<small>Entidades de financiamiento</small></div>
+        <div class="client-pill">Cajas de Ahorro<small>Cooperativas de ahorro popular</small></div>
+        <div class="client-pill">Almacenes<small>Almacenes Grales. de Depósito</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COURSES -->
+  <section class="courses-bg" id="cursos">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-tag">Capacitación</span>
+        <h2 class="section-title">Cursos Especializados</h2>
+        <p class="section-sub">Programas de formación diseñados por expertos del sector financiero no bancario para elevar las capacidades de su equipo.</p>
+      </div>
+      <div class="courses-grid">
+        <div class="course-card reveal">
+          <div class="course-num">CURSO 01</div>
+          <h3>Gobierno Corporativo</h3>
+          <p>Estructuras, roles y responsabilidades para una gestión institucional eficiente y transparente.</p>
+          <span class="course-tag">Presencial / En línea</span>
+        </div>
+        <div class="course-card reveal">
+          <div class="course-num">CURSO 02</div>
+          <h3>Planeación Estratégica</h3>
+          <p>Metodologías para definir objetivos, estrategias y planes de acción alineados al marco regulatorio.</p>
+          <span class="course-tag">Presencial / En línea</span>
+        </div>
+        <div class="course-card reveal">
+          <div class="course-num">CURSO 03</div>
+          <h3>Análisis y Decisión Crediticia</h3>
+          <p>Técnicas avanzadas para evaluar solicitudes de crédito y gestionar el riesgo de cartera.</p>
+          <span class="course-tag">Presencial / En línea</span>
+        </div>
+        <div class="course-card reveal">
+          <div class="course-num">CURSO 04</div>
+          <h3>Gestión de Riesgos</h3>
+          <p>Identificación, medición y control de riesgos financieros, operativos y de cumplimiento.</p>
+          <span class="course-tag">Presencial / En línea</span>
+        </div>
+        <div class="course-card reveal">
+          <div class="course-num">CURSO 05</div>
+          <h3>Prevención de Lavado de Dinero</h3>
+          <p>Marco normativo PLD/FT, señales de alerta, reportes y mejores prácticas internacionales.</p>
+          <span class="course-tag">Presencial / En línea</span>
+        </div>
+        <div class="course-card reveal">
+          <div class="course-num">CURSO 06</div>
+          <h3>Calificación de Cartera</h3>
+          <p>Metodologías de calificación y estimaciones preventivas conforme a disposiciones de la CNBV.</p>
+          <span class="course-tag">Presencial / En línea</span>
+        </div>
+        <div class="course-card reveal">
+          <div class="course-num">CURSO 07</div>
+          <h3>Control Interno</h3>
+          <p>Diseño e implementación de sistemas de control interno robustos para IFNB's.</p>
+          <span class="course-tag">Presencial / En línea</span>
+        </div>
+        <div class="course-card reveal">
+          <div class="course-num">CURSO 08</div>
+          <h3>Auditoría Interna</h3>
+          <p>Técnicas y metodologías de auditoría interna aplicadas al sector financiero no bancario.</p>
+          <span class="course-tag">Presencial / En línea</span>
+        </div>
+        <div class="course-card reveal" style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; background:rgba(201,168,76,0.08); border-color:rgba(201,168,76,0.3);">
+          <div style="font-size:2rem; margin-bottom:0.75rem;">📋</div>
+          <h3 style="color:var(--gold);">¿Curso a la medida?</h3>
+          <p style="color:#64748B; margin-bottom:1rem;">Diseñamos programas personalizados según las necesidades de su institución.</p>
+          <a href="#contacto" class="btn-primary" style="font-size:0.82rem; padding:0.6rem 1.4rem;">Solicitar Información</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="galeria">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <span class="section-tag">Galería</span>
+        <h2 class="section-title">Nuestras Actividades</h2>
+        <p class="section-sub">Momentos de nuestros cursos, eventos y actividades de consultoría con clientes de todo México.</p>
+      </div>
+      <div class="gallery-grid reveal">
+        <div class="gallery-item">
+          <div class="gallery-inner" style="background:linear-gradient(135deg,#0B1F3A,#1a3a5c);">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="16" width="48" height="32" rx="4" stroke="rgba(201,168,76,0.5)" stroke-width="2"/>
+              <circle cx="32" cy="32" r="8" stroke="rgba(201,168,76,0.5)" stroke-width="2"/>
+              <line x1="8" y1="24" x2="56" y2="24" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+            </svg>
+          </div>
+          <div class="gallery-label">Curso de Gobierno Corporativo — CDMX 2025</div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-inner" style="background:linear-gradient(135deg,#1a3a5c,#0B1F3A);">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 48L24 32l8 10 10-14 10 20" stroke="rgba(201,168,76,0.5)" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="12" cy="48" r="3" fill="rgba(201,168,76,0.5)"/>
+              <circle cx="24" cy="32" r="3" fill="rgba(201,168,76,0.5)"/>
+            </svg>
+          </div>
+          <div class="gallery-label">Taller de Gestión de Riesgos — Guadalajara 2025</div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-inner" style="background:linear-gradient(135deg,#122848,#0B1F3A);">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="16" y="12" width="32" height="40" rx="3" stroke="rgba(201,168,76,0.5)" stroke-width="2"/>
+              <line x1="22" y1="22" x2="42" y2="22" stroke="rgba(201,168,76,0.4)" stroke-width="1.5"/>
+              <line x1="22" y1="30" x2="42" y2="30" stroke="rgba(201,168,76,0.4)" stroke-width="1.5"/>
+              <line x1="22" y1="38" x2="34" y2="38" stroke="rgba(201,168,76,0.4)" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="gallery-label">Consultoría PLD — Monterrey 2024</div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-inner" style="background:linear-gradient(135deg,#0B1F3A,#122848);">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="32" cy="24" r="10" stroke="rgba(201,168,76,0.5)" stroke-width="2"/>
+              <path d="M16 52c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="rgba(201,168,76,0.5)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="gallery-label">Capacitación Interna — Puebla 2024</div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-inner" style="background:linear-gradient(135deg,#1a3a5c,#122848);">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 32h48M32 8v48" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+              <rect x="20" y="36" width="8" height="16" fill="rgba(201,168,76,0.3)"/>
+              <rect x="32" y="24" width="8" height="28" fill="rgba(201,168,76,0.5)"/>
+              <rect x="44" y="30" width="8" height="22" fill="rgba(201,168,76,0.4)"/>
+            </svg>
+          </div>
+          <div class="gallery-label">Foro IFNB's — CDMX 2024</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INFOGRAPHICS -->
+  <section class="infographics-bg" id="infografias">
+    <div class="section-inner">
+      <div class="section-header reveal" style="text-align:center;">
+        <span class="section-tag">Infografías</span>
+        <h2 class="section-title">Recursos Educativos</h2>
+        <p class="section-sub" style="margin:0 auto;">Material informativo sobre regulación, normativa y mejores prácticas para el sector financiero no bancario.</p>
+      </div>
+      <div class="infographics-grid">
+        <div class="info-card reveal">
+          <div class="info-card-top" style="background:linear-gradient(135deg,#0B1F3A,#1a3a5c);">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M32 8l20 12v24L32 56 12 44V20L32 8z" stroke="rgba(201,168,76,0.7)" stroke-width="2"/>
+              <path d="M32 8v48M12 20l20 12 20-12" stroke="rgba(201,168,76,0.4)" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="info-card-body">
+            <h3>Marco Regulatorio de las SOFOMs</h3>
+            <p>Guía completa sobre la regulación aplicable a las Sociedades Financieras de Objeto Múltiple en México.</p>
+            <a href="#" class="info-card-link">Ver infografía →</a>
+          </div>
+        </div>
+        <div class="info-card reveal">
+          <div class="info-card-top" style="background:linear-gradient(135deg,#122848,#0B1F3A);">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="32" cy="32" r="20" stroke="rgba(201,168,76,0.7)" stroke-width="2"/>
+              <path d="M32 12v20l14 8" stroke="rgba(201,168,76,0.5)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="info-card-body">
+            <h3>Proceso de Cumplimiento PLD/FT</h3>
+            <p>Pasos clave para implementar un programa efectivo de Prevención de Lavado de Dinero y Financiamiento al Terrorismo.</p>
+            <a href="#" class="info-card-link">Ver infografía →</a>
+          </div>
+        </div>
+        <div class="info-card reveal">
+          <div class="info-card-top" style="background:linear-gradient(135deg,#1a3a5c,#122848);">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="12" y="12" width="40" height="40" rx="4" stroke="rgba(201,168,76,0.7)" stroke-width="2"/>
+              <path d="M20 32l8 8 16-16" stroke="rgba(201,168,76,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="info-card-body">
+            <h3>Calificación de Cartera Crediticia</h3>
+            <p>Metodología y criterios para la calificación de cartera conforme a las disposiciones de la CNBV.</p>
+            <a href="#" class="info-card-link">Ver infografía →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact-bg" id="contacto">
+    <div class="section-inner">
+      <div class="contact-grid">
+        <div class="contact-info reveal">
+          <span class="section-tag">Contáctanos</span>
+          <h2>¿Listo para transformar su institución?</h2>
+          <p>Contáctenos hoy y descubra cómo SUMA Empresarial puede ayudar a su institución a alcanzar sus objetivos de cumplimiento, rentabilidad y desarrollo.</p>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            </div>
+            <div class="contact-detail-text">
+              <strong>Teléfono</strong>
+              <span>+52 (55) 1234-5678</span>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <div class="contact-detail-text">
+              <strong>Correo Electrónico</strong>
+              <span>contacto@sumaempresarial.mx</span>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <div class="contact-detail-text">
+              <strong>Ubicación</strong>
+              <span>Ciudad de México, México</span>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form reveal">
+          <h3 style="font-size:1.1rem; font-weight:700; color:var(--navy); margin-bottom:1.5rem;">Envíenos un Mensaje</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre *</label>
+              <input type="text" placeholder="Su nombre completo" />
+            </div>
+            <div class="form-group">
+              <label>Institución *</label>
+              <input type="text" placeholder="Nombre de su institución" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Correo Electrónico *</label>
+              <input type="email" placeholder="correo@ejemplo.com" />
+            </div>
+            <div class="form-group">
+              <label>Teléfono</label>
+              <input type="tel" placeholder="+52 (55) 0000-0000" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Tipo de IFNB</label>
+            <select>
+              <option value="">Seleccione el tipo de institución</option>
+              <option>SOFOM</option>
+              <option>SOFIPO</option>
+              <option>Unión de Crédito</option>
+              <option>Caja de Ahorro Popular</option>
+              <option>Almacén General de Depósito</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Servicio de Interés</label>
+            <select>
+              <option value="">Seleccione el servicio</option>
+              <option>Cumplimiento Normativo</option>
+              <option>Gobierno Corporativo</option>
+              <option>Gestión de Riesgos</option>
+              <option>Análisis de Crédito</option>
+              <option>Auditoría Interna</option>
+              <option>Prevención de Lavado de Dinero</option>
+              <option>Capacitación / Cursos</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mensaje *</label>
+            <textarea placeholder="Describa brevemente sus necesidades o consulta..."></textarea>
+          </div>
+          <button class="form-submit">Enviar Mensaje</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo-text">
+            <strong>SUMA Empresarial, S.C.</strong><br>
+            <small>CONSULTORÍA EN IFNB'S</small>
+          </div>
+          <p>Consultoría, Asistencia Técnica y Capacitación Especializada para Intermediarios Financieros No Bancarios en México desde 2016.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navegación</h4>
+          <ul>
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#nosotros">¿Quiénes Somos?</a></li>
+            <li><a href="#servicios">Servicios</a></li>
+            <li><a href="#cursos">Cursos</a></li>
+            <li><a href="#galeria">Galería</a></li>
+            <li><a href="#infografias">Infografías</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Servicios</h4>
+          <ul>
+            <li><a href="#servicios">Cumplimiento Normativo</a></li>
+            <li><a href="#servicios">Gobierno Corporativo</a></li>
+            <li><a href="#servicios">Gestión de Riesgos</a></li>
+            <li><a href="#servicios">Análisis de Crédito</a></li>
+            <li><a href="#servicios">Auditoría Interna</a></li>
+            <li><a href="#servicios">Prevención PLD</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <ul>
+            <li><a href="mailto:contacto@sumaempresarial.mx">contacto@sumaempresarial.mx</a></li>
+            <li><a href="tel:+525512345678">+52 (55) 1234-5678</a></li>
+            <li><a href="#contacto">Ciudad de México, México</a></li>
+            <li><a href="#contacto">Solicitar Consulta</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>©2016–2026 SUMA Empresarial, S.C. Todos los derechos reservados.</span>
+        <span style="color:#475569;">Regulación · Consultoría · Capacitación</span>
+      </div>
+    </div>
+  </footer>
+
   <script>
-    // Sample street food businesses data
-    const businesses = [
-      { id: 1, name: "Tacos El Callejón", lat: 19.4326, lng: -99.1332 },
-      { id: 2, name: "Arepas La Plaza", lat: 19.4330, lng: -99.1350 },
-      { id: 3, name: "Churros y Café", lat: 19.4310, lng: -99.1320 },
-      { id: 4, name: "Elotes y Esquites", lat: 19.4340, lng: -99.1340 }
-    ];
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
 
-    // Initialize map
-    const map = L.map('map').setView([19.4326, -99.1332], 15);
+    // Mobile menu
+    function toggleMenu() {
+      const links = document.querySelector('.nav-links');
+      if (links.style.display === 'flex') {
+        links.style.display = 'none';
+      } else {
+        links.style.display = 'flex';
+        links.style.flexDirection = 'column';
+        links.style.position = 'absolute';
+        links.style.top = '70px';
+        links.style.left = '0';
+        links.style.right = '0';
+        links.style.background = '#fff';
+        links.style.padding = '1rem 2rem 1.5rem';
+        links.style.borderBottom = '1px solid #E5E7EB';
+        links.style.boxShadow = '0 8px 20px rgba(0,0,0,0.08)';
+        links.style.zIndex = '99';
+      }
+    }
 
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    // Add markers for businesses
-    businesses.forEach(business => {
-      const marker = L.marker([business.lat, business.lng]).addTo(map);
-      marker.bindPopup('<b>' + business.name + '</b>');
+    // Close mobile menu on link click
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.addEventListener('click', () => {
+        const links = document.querySelector('.nav-links');
+        links.style.display = 'none';
+      });
     });
 
-    // Get user location and center map
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        function(position) {
-          const userLatLng = [position.coords.latitude, position.coords.longitude];
-          map.setView(userLatLng, 16);
-          L.circle(userLatLng, { radius: 50, color: 'black', fillColor: '#000', fillOpacity: 0.3 }).addTo(map).bindPopup("Tu ubicación");
-        },
-        function() {
-          console.warn("No se pudo obtener la ubicación del usuario.");
-        }
-      );
-    } else {
-      console.warn("Geolocalización no soportada por el navegador.");
-    }
+    // Form submit
+    document.querySelector('.form-submit').addEventListener('click', function(e) {
+      e.preventDefault();
+      this.textContent = '✓ Mensaje Enviado';
+      this.style.background = '#16a34a';
+      this.style.color = '#fff';
+      setTimeout(() => {
+        this.textContent = 'Enviar Mensaje';
+        this.style.background = '';
+        this.style.color = '';
+      }, 3000);
+    });
   </script>
 </body>
 </html>
